@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ChevronRightIcon } from "@heroicons/react/16/solid";
+import React, { useEffect, useState } from "react";
+import { ChevronRightIcon, UsersIcon } from "@heroicons/react/16/solid";
 
 const Stepper = () => {
   const [marginTop, setMarginTop] = useState("");
@@ -15,61 +15,189 @@ const Stepper = () => {
   const [putStep, setPutStep] = useState(0);
   const [tabArray, setTabArray] = useState(["Step 1 ⊕"]);
 
-  const putStepChanged = () => {
-    const newArray = [...tabArray, `Step ${tabArray.length + 1} ⊖`];
+  const [state, setStateValue] = useState([]);
+
+  const [nowStep, setNowStep] = useState("Step 1 ⊕");
+
+  const putStepChanged = (e) => {
+    const newArray = [...tabArray, `Step ${tabArray.length + 1}`];
+    let objectArray = [
+      ...state,
+      {
+        id: `Step ${tabArray.length + 1}`,
+        object: newObject,
+      },
+    ];
     setTabArray(newArray);
     setPutStep(newArray.length - 1);
-  };
 
+    setStateValue(objectArray);
+  };
+  useEffect(() => {
+    console.log("stateValue", state);
+  }, [state]);
   const stepChanged = () => {
     setStep(step + 1);
   };
 
+  const stateSave = () => {
+    console.log("save");
+    let returnArray = state.filter((e) => {
+      return e.id != nowStep;
+    });
+    console.log(returnArray);
+    if (Array.isArray(returnArray)) {
+      returnArray.push({
+        id: nowStep,
+        object: {
+          step: step,
+          page: toolTipPage,
+          element: toolTipElement,
+          position: toolTipPositon,
+          margin: {
+            top: marginTop,
+            bottom: marginBottom,
+            right: marginRight,
+            left: marginLeft,
+          },
+        },
+      });
+      setStateValue(returnArray);
+    }
+  };
+
+  const deleteStep = (evenId, number) => {
+    let newArray = tabArray.filter((e) => {
+      return e !== evenId;
+    });
+
+    let stateArray = state.filter((e) => {
+      return e.id !== evenId;
+    });
+
+    setStateValue(stateArray);
+    setTabArray(newArray);
+    setStep(0);
+  };
+
+  const stepClicked = (evenId, number) => {
+    console.log(evenId);
+    let index = state.findIndex((e) => {
+      return e.id == evenId;
+    });
+    console.log(index);
+    if (index !== -1) {
+      stateSave();
+      setPutStep(number);
+      let returnArray = state.at(index);
+      if (returnArray.object) {
+        let returnObject = returnArray.object;
+        setNowStep(evenId);
+        setStep(returnObject.step);
+
+        setToolTipPage(returnObject.page);
+        setToolTipElement(returnObject.element);
+        setToolTipPositon(returnObject.position);
+
+        setMarginTop(returnObject.margin.top);
+        setMarginBotom(returnObject.margin.bottom);
+        setMarginRight(returnObject.margin.right);
+        setMarginLeft(returnObject.margin.left);
+      }
+    }
+  };
+
+  const newObject = {
+    step: 0,
+    page: "",
+    element: "",
+    position: "",
+    margin: {
+      top: "",
+      bottom: "",
+      right: "",
+      left: "",
+    },
+  };
+
+  const staticArray = ["Audience", "Goals", "Scheduling"];
+
+  useEffect(() => {
+    let newArray = [];
+    newArray.push({
+      id: "Step 1 ⊕",
+      object: newObject,
+    });
+    staticArray.map((e) => {
+      newArray.push({
+        id: e,
+        object: newObject,
+      });
+    });
+    setStateValue(newArray);
+  }, []);
+
   return (
     <main className="flex-1 bg-gray-100 p-10">
       <div
-        className="w-4/5 mx-auto mt-5"
+        className="w-5/5 mx-auto mt-5"
         style={{ margin: 0, borderTopLeftRadius: "10px", borderBottom: "none" }}
       >
-        <div className="flex items-center bg-gray-100 rounded-t-xl relative">
+        <div className="flex items-center bg-gray-100 rounded-t-xl relative overflow-x-auto max-w-[1554px] ">
           <div className="flex relative">
-            <button
-              className={`h-16 w-44 flex items-center justify-center text-gray-600 font-medium text-sm relative z-10 transition-all duration-300 ${
-                putStep === 0
-                  ? "bg-white text-black font-bold border border-gray-300 rounded-tl-xl relative after:absolute after:right-[-10px] after:top-0 after:w-[20px] after:h-full after:bg-gray-100 after:skew-x-[20deg]"
-                  : " text-gray-600 border border-gray-300"
-              }`}
-              style={{
-                borderRight: "none",
-                borderBottom: "none",
-                borderTopLeftRadius: "20px",
-              }}
-              onClick={putStepChanged}
-            >
-              Step 1 ⊕
-            </button>
-
-            {tabArray.slice(1).map((e, index) => (
-              <button
-                key={index + 1}
+            <div className="relative">
+              <div
                 className={`h-16 w-44 flex items-center justify-center text-gray-600 font-medium text-sm relative z-10 transition-all duration-300 ${
-                  putStep === index + 1
-                    ? "bg-white text-black font-bold border border-gray-300 relative after:absolute after:right-[-10px] after:top-0 after:w-[20px] after:h-full after:bg-gray-100 after:skew-x-[20deg]"
+                  putStep === 0
+                    ? "bg-white text-black font-bold border border-gray-300 rounded-tl-xl relative after:absolute after:right-[-10px] after:top-0 after:w-[20px] after:h-full after:bg-gray-100 after:skew-x-[20deg]"
                     : " text-gray-600 border border-gray-300"
                 }`}
-                onClick={() => setPutStep(index + 1)}
                 style={{
-                  borderRight:
-                    putStep === index + 1 ? "none" : "sloid gray 1px",
+                  borderRight: "none",
                   borderBottom: "none",
-                  borderLeft: "none",
+                  borderTopLeftRadius: "20px",
                 }}
+                onClick={() => stepClicked("Step 1 ⊕", 0)}
               >
-                {e}
+                Step 1
+              </div>
+              <button
+                className="absolute size-[16px] left-[110px] top-[21px] z-[10]"
+                onClick={(e) => putStepChanged(e)}
+              >
+                ⊕
               </button>
+            </div>
+
+            {tabArray.slice(1).map((e, index) => (
+              <div className="relative">
+                <div
+                  key={index + 1}
+                  className={`h-16 w-44 flex items-center justify-center text-gray-600 font-medium text-sm relative z-10 transition-all duration-300 ${
+                    putStep === index + 1
+                      ? "bg-white text-black font-bold border border-gray-300 relative after:absolute after:right-[-10px] after:top-0 after:w-[20px] after:h-full after:bg-gray-100 after:skew-x-[20deg]"
+                      : " text-gray-600 border border-gray-300"
+                  }`}
+                  onClick={() => stepClicked(e, index + 1)}
+                  style={{
+                    borderRight:
+                      putStep === index + 1 ? "none" : "sloid gray 1px",
+                    borderBottom: "none",
+                    borderLeft: "none",
+                  }}
+                >
+                  {`Step ${index + 2}`}
+                </div>
+                <button
+                  className="absolute size-[16px] left-[110px] top-[21px] z-[10]"
+                  onClick={() => deleteStep(e, index + 1)}
+                >
+                  ⊖
+                </button>
+              </div>
             ))}
 
-            {["Audience", "Goals", "Scheduling"].map((tab, index) => {
+            {staticArray.map((tab, index) => {
               const isLastTab = index === 2;
               return (
                 <button
@@ -83,7 +211,7 @@ const Stepper = () => {
                         }`
                       : " text-gray-600 border border-gray-300"
                   } ${isLastTab ? "rounded-tr-xl" : ""}`}
-                  onClick={() => setPutStep(tabArray.length + index)}
+                  onClick={() => stepClicked(tab, tabArray.length + index)}
                   style={{
                     borderLeft: "none",
                     borderRight:
