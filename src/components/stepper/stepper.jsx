@@ -13,11 +13,25 @@ const Stepper = () => {
 
   const [step, setStep] = useState(0);
   const [putStep, setPutStep] = useState(0);
+  const [state, setStateValue] = useState([]);
+  const [nowStep, setNowStep] = useState("Step 1 ⊕");
+
   const [tabArray, setTabArray] = useState(["Step 1 ⊕"]);
 
-  const [state, setStateValue] = useState([]);
+  const staticArray = ["Audience", "Goals", "Scheduling"];
 
-  const [nowStep, setNowStep] = useState("Step 1 ⊕");
+  const newObject = {
+    step: 0,
+    page: "",
+    element: "",
+    position: "",
+    margin: {
+      top: "",
+      bottom: "",
+      right: "",
+      left: "",
+    },
+  };
 
   const putStepChanged = (e) => {
     const newArray = [...tabArray, `Step ${tabArray.length + 1}`];
@@ -32,10 +46,9 @@ const Stepper = () => {
     setPutStep(newArray.length - 1);
 
     setStateValue(objectArray);
+    setNowStep(`Step ${tabArray.length + 1}`);
   };
-  useEffect(() => {
-    console.log("stateValue", state);
-  }, [state]);
+
   const stepChanged = () => {
     setStep(step + 1);
   };
@@ -45,7 +58,7 @@ const Stepper = () => {
     let returnArray = state.filter((e) => {
       return e.id != nowStep;
     });
-    console.log(returnArray);
+    console.log(nowStep);
     if (Array.isArray(returnArray)) {
       returnArray.push({
         id: nowStep,
@@ -77,7 +90,7 @@ const Stepper = () => {
 
     setStateValue(stateArray);
     setTabArray(newArray);
-    setStep(0);
+    stepClicked("Step 1 ⊕", 0);
   };
 
   const stepClicked = (evenId, number) => {
@@ -92,6 +105,7 @@ const Stepper = () => {
       let returnArray = state.at(index);
       if (returnArray.object) {
         let returnObject = returnArray.object;
+
         setNowStep(evenId);
         setStep(returnObject.step);
 
@@ -106,21 +120,6 @@ const Stepper = () => {
       }
     }
   };
-
-  const newObject = {
-    step: 0,
-    page: "",
-    element: "",
-    position: "",
-    margin: {
-      top: "",
-      bottom: "",
-      right: "",
-      left: "",
-    },
-  };
-
-  const staticArray = ["Audience", "Goals", "Scheduling"];
 
   useEffect(() => {
     let newArray = [];
@@ -278,58 +277,78 @@ const Stepper = () => {
         <div className="flex flex-col mt-[60px] p-6 gap-[40px] w-[900px]">
           <div className="flex justify-between">
             <div>
-              <label className="block text-black text-[18px]">Page</label>
+              <label className="block text-black text-[18px] text-[#0E1736] font-medium">
+                Page
+              </label>
               <label className="block text-gray-400 text-[15px]">
                 Choose page to add tooltip
               </label>
             </div>
-            <select
-              className="w-[390px] p-2 border rounded mb-4"
-              value={toolTipPage}
-              onChange={(e) => setToolTipPage(e.target.value)}
-            >
-              <option>Page 1</option>
-              <option>Page 2</option>
-            </select>
+            <div className="relative w-[390px]">
+              <select
+                className="w-full p-2 pl-4 pr-10 border rounded appearance-none bg-white text-gray-700"
+                value={toolTipPage}
+                onChange={(e) => setToolTipPage(e.target.value)}
+              >
+                <option value="Option1">Page 1</option>
+                <option value="Option2">Page 2</option>
+              </select>
+              <div className="absolute right-3 top-[30%] transform -translate-y-1/2 pointer-events-none text-gray-600 text-lg">
+                ⌄
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-between">
             <div>
-              <label className="block text-black text-[18px]">
+              <label className="block text-black text-[18px] text-[#0E1736] font-medium">
                 Select Element
               </label>
+
               <label className="block text-gray-400 text-[15px]">
                 Select Element from the page
               </label>
             </div>
-            <select
-              className="w-[390px] p-2 border rounded mb-4"
-              value={toolTipElement}
-              onChange={(e) => setToolTipElement(e.target.value)}
-            >
-              <option>Element 1</option>
-              <option>Element 2</option>
-            </select>
+            <div className="relative w-[390px]">
+              <select
+                className="w-full p-2 pl-4 pr-10 border rounded appearance-none bg-white text-gray-700"
+                value={toolTipElement}
+                onChange={(e) => setToolTipElement(e.target.value)}
+              >
+                <option value="Option1">Element 1</option>
+                <option value="Option2">Element 2</option>
+              </select>
+              <div className="absolute right-3 top-[30%] transform -translate-y-1/2 pointer-events-none text-gray-600 text-lg">
+                ⌄
+              </div>
+            </div>
           </div>
           <div className="flex justify-between">
             <div>
-              <label className="block text-black text-[18px]">Position</label>
+              <label className="block text-black text-[18px] text-[#0E1736] font-medium">
+                Position
+              </label>
               <label className="block text-gray-400 text-[15px]">
                 Select position for the tooltip
               </label>
             </div>
-            <select
-              className="w-[390px] p-2 border rounded mb-4"
-              value={toolTipPositon}
-              onChange={(e) => setToolTipPositon(e.target.value)}
-            >
-              <option>Positon</option>
-            </select>
+            <div className="relative w-[390px]">
+              <select
+                className="w-full p-2 pl-4 pr-10 border rounded appearance-none bg-white text-gray-700"
+                value={toolTipPositon}
+                onChange={(e) => setToolTipPositon(e.target.value)}
+              >
+                <option value="Option1">Position</option>
+              </select>
+              <div className="absolute right-3 top-[30%] transform -translate-y-1/2 pointer-events-none text-gray-600 text-lg">
+                ⌄
+              </div>
+            </div>
           </div>
           <div className="flex justify-between">
             <div>
               <div className="flex items-center gap-[10px]">
-                <label className="block text-black text-[18px]">
+                <label className="block text-black text-[18px] text-[#0E1736] font-medium">
                   Outer Margins
                 </label>
                 <label className="block text-gray-400 text-[12px]">
@@ -355,7 +374,7 @@ const Stepper = () => {
                   <td className="border p-2">
                     <input
                       type="text"
-                      className="w-full border p-1"
+                      className="w-full focus:outline-none border p-1"
                       style={{ border: "none" }}
                       value={marginTop}
                       onChange={(e) => setMarginTop(e.target.value)}
@@ -364,7 +383,7 @@ const Stepper = () => {
                   <td className="border p-2">
                     <input
                       type="text"
-                      className="w-full border p-1"
+                      className="w-full focus:outline-none border p-1"
                       style={{ border: "none" }}
                       value={marginBottom}
                       onChange={(e) => setMarginBotom(e.target.value)}
@@ -373,7 +392,7 @@ const Stepper = () => {
                   <td className="border p-2">
                     <input
                       type="text"
-                      className="w-full border p-1"
+                      className="w-full focus:outline-none border p-1"
                       style={{ border: "none" }}
                       value={marginRight}
                       onChange={(e) => setMarginRight(e.target.value)}
@@ -382,7 +401,7 @@ const Stepper = () => {
                   <td className="border p-2">
                     <input
                       type="text"
-                      className="w-full border p-1"
+                      className="w-full focus:outline-none border p-1"
                       style={{ border: "none" }}
                       value={marginLeft}
                       onChange={(e) => setMarginLeft(e.target.value)}
